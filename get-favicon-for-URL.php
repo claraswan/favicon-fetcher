@@ -22,67 +22,70 @@ Examples:
 
 SYNOPSIS;
 
-if (count($argv) == 3){
-	$url = $argv[2];
-	$directory = $argv[1];
-	$result = getFavicon($url, $directory);
-	echo $result[1]."\n";
-	exit($result[0]);
-}
-
-function getFavicon($url, $directory = './'){
-	
-	// Get it from Google instead of doing all the work ourselves
-	$domain = getDomainName($url);
-	
-	//$faviconURL = 'http://g.etfv.co/http://www.'.$domain.'?defaulticon=none';
-	$faviconURL = 'http://www.google.com/s2/favicons?domain=www.'.$domain.'';
-	
-	$content = cURLopen($faviconURL);
-	
-	if (empty($content) || md5($content) == 'b8a0bf372c762e966cc99ede8682bc71'){
-		return array(1, 'No favicon found');
-	} else {
-		$filePath = preg_replace('#\/\/#', '/', $directory.'/'.$domain.'.ico');
-		$fp = fopen($filePath, 'w');
-		fwrite($fp, $content);
-		fclose($fp);
+class FaviconFetcher 
+{
+	public function getFavicon(string $url, string $directory = './'): string
+	{
+		// Get it from Google instead of doing all the work ourselves
+		$domain = $this->getDomainName($url);
 		
-		return array(0, $filePath);
+		//$faviconURL = 'http://g.etfv.co/http://www.'.$domain.'?defaulticon=none';
+		$faviconURL = 'http://www.google.com/s2/favicons?domain=www.'.$domain.'';
+		
+		$content = $this->cURLopen($faviconURL);
+		
+		if (empty($content) || md5($content) == 'b8a0bf372c762e966cc99ede8682bc71'){
+			return 'No favicon found';
+		} else {
+			$filePath = preg_replace('#\/\/#', '/', $directory.'/'.$domain.'.ico');
+			$fp = fopen($filePath, 'w');
+			fwrite($fp, $content);
+			fclose($fp);
+			
+			return $filePath;
+		}
 	}
-}
-
-function getDomainName($string){
-	$components = parse_url($string);
-	return getTopLevelDomain($components['host']);
-}
-
-function getTopLevelDomain($string){
-	$hostnameComponents = explode('.', $string);
-	if (count($hostnameComponents) >= 2){
-		return $hostnameComponents[count($hostnameComponents)-2].'.'.$hostnameComponents[count($hostnameComponents)-1];
-	} else {
-		return $string;
-	}
-}
-
-function URLopen($url){
-	$dh = fopen("$url",'r');
-	$result = fread($dh,8192);                                                                                                                            
-	return $result;
-} 
-
-function cURLopen($url){
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,1);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	$response = curl_exec($ch);
-	curl_close($ch);
 	
-	return $response;	
+	private function getDomainName(string $url): string
+	{
+		$components = parse_url($url);
+		return $this->getTopLevelDomain($components['host']);
+	}
+	
+	private function getTopLevelDomain(string $host): string
+	{
+		$hostnameComponents = explode('.', $host);
+		if (count($hostnameComponents) >= 2){
+			return $hostnameComponents[count($hostnameComponents)-2].'.'.$hostnameComponents[count($hostnameComponents)-1];
+		} else {
+			return $host;
+		}
+	}
+	
+	private function URLopen($url)
+	{
+		$dh = fopen("$url",'r');
+		$result = fread($dh,8192);                                                                                                                            
+		return $result;
+	} 
+	
+	private function cURLopen(string $url)
+	{
+		$ch = curl_init();
+		curl_setopt_array($ch, [
+			CURLOPT_URL => $url,
+			CURLOPT_CONNECTTIMEOUT => 1,
+			CURLOPT_FOLLOWLOCATION => 1,
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_HEADER => 0,
+		]);
+
+		$response = curl_exec($ch);
+		curl_close($ch);
+		
+		return $response;	
+	}
 }
+
 
 ?>
