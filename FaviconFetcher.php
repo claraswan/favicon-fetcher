@@ -1,41 +1,24 @@
 <?php
-//Copyright (c) 2014, SWITCH
-$info = <<<SYNOPSIS
-Synopsis
-Tries to download the favicon for the (second level) domain name of a given URL.
-If available, the favicon mentioned the HTML document of that domain is used.
-Otherwise the script tries to guess the typical locations of the favicion 
-document.
-
-Output:
-If successful, the script returns the path of the downloaded favicon and an 
-error code 0.
-If unsucessful, it returns 'No favicon found' and error code 1.
-
-Usage: php get-favicon-for-URL.php <directory> <url>
-* <directory> Where to save the favicon
-* <url> URL for whose domain the favicon shall be downloaded
-
-Examples:
-* php get-favicon-for-URL.php https://www.renater.fr/some/path
-* php get-favicon-for-URL.php metadata.switchaai/ https://www.switch.ch/aai
-
-SYNOPSIS;
+namespace FaviconFetcher;
 
 class FaviconFetcher 
 {
+	/**
+	 * @param string $url URL from whose domain will be searched for a favicon
+	 * @param string $directory The directory where the favison should be saved
+	 */
 	public function getFavicon(string $url, string $directory = './'): string
 	{
 		// Get it from Google instead of doing all the work ourselves
 		$domain = $this->getDomainName($url);
 		
 		//$faviconURL = 'http://g.etfv.co/http://www.'.$domain.'?defaulticon=none';
-		$faviconURL = 'http://www.google.com/s2/favicons?domain=www.'.$domain.'';
+		$faviconURL = 'http://www.google.com/s2/favicons?domain=www.' . $domain . '';
 		
 		$content = $this->cURLopen($faviconURL);
 		
-		if (empty($content) || md5($content) == 'b8a0bf372c762e966cc99ede8682bc71'){
-			return 'No favicon found';
+		if (empty($content) || md5($content) == 'b8a0bf372c762e966cc99ede8682bc71') {
+			return '';
 		} else {
 			$filePath = preg_replace('#\/\/#', '/', $directory.'/'.$domain.'.ico');
 			$fp = fopen($filePath, 'w');
@@ -55,8 +38,8 @@ class FaviconFetcher
 	private function getTopLevelDomain(string $host): string
 	{
 		$hostnameComponents = explode('.', $host);
-		if (count($hostnameComponents) >= 2){
-			return $hostnameComponents[count($hostnameComponents)-2].'.'.$hostnameComponents[count($hostnameComponents)-1];
+		if (count($hostnameComponents) >= 2) {
+			return $hostnameComponents[count($hostnameComponents)-2] . '.' . $hostnameComponents[count($hostnameComponents)-1];
 		} else {
 			return $host;
 		}
