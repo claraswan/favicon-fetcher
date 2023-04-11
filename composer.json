@@ -1,5 +1,5 @@
 {
-    "name": "cas/favicon-fetcher",
+    "name": "cswan/favicon-fetcher",
     "description": "Downloads a company's favicon from given URL",
     "autoload": {
         "psr-4": {
