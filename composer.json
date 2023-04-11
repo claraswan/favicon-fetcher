@@ -1,0 +1,16 @@
+{
+    "name": "cas/favicon-fetcher",
+    "description": "Downloads a company's favicon from given URL",
+    "autoload": {
+        "psr-4": {
+            "FaviconFetcher\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Clara Swanson",
+            "email": "claraswanson671@gmail.com"
+        }
+    ],
+    "require": {}
+}

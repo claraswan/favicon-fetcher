@@ -1,5 +1,4 @@
 <?php
-namespace FaviconFetcher;
 
 class FaviconFetcher 
 {
@@ -11,7 +10,7 @@ class FaviconFetcher
 	{
 		$domain = $this->getDomainName($url);
 		
-		$faviconURL = 'http://www.google.com/s2/favicons?domain=www.' . $domain . '';
+		$faviconURL = 'http://www.google.com/s2/favicons?domain=www.' . $domain;
 		
 		$content = $this->cURLopen($faviconURL);
 		
@@ -30,7 +29,8 @@ class FaviconFetcher
 	private function getDomainName(string $url): string
 	{
 		$components = parse_url($url);
-		return $this->getTopLevelDomain($components['host']);
+		$host = $components['host'] ?? '';
+		return $this->getTopLevelDomain($host);
 	}
 	
 	private function getTopLevelDomain(string $host): string

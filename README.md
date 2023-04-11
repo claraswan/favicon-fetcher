@@ -19,6 +19,6 @@ $faviconFetcher = new FaviconFetcher\FaviconFetcher();
 $faviconPath = $faviconFetcher->getFavicon();
 
 if ($faviconPath === '') {
-    $faviconPath .= '/path/to/default/favicon.ico';
+    $faviconPath = '/path/to/default/favicon.ico';
 }
 ```
