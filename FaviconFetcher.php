@@ -5,14 +5,12 @@ class FaviconFetcher
 {
 	/**
 	 * @param string $url URL from whose domain will be searched for a favicon
-	 * @param string $directory The directory where the favison should be saved
+	 * @param string $directory The directory where the favicon should be saved
 	 */
 	public function getFavicon(string $url, string $directory = './'): string
 	{
-		// Get it from Google instead of doing all the work ourselves
 		$domain = $this->getDomainName($url);
 		
-		//$faviconURL = 'http://g.etfv.co/http://www.'.$domain.'?defaulticon=none';
 		$faviconURL = 'http://www.google.com/s2/favicons?domain=www.' . $domain . '';
 		
 		$content = $this->cURLopen($faviconURL);
@@ -38,6 +36,7 @@ class FaviconFetcher
 	private function getTopLevelDomain(string $host): string
 	{
 		$hostnameComponents = explode('.', $host);
+
 		if (count($hostnameComponents) >= 2) {
 			return $hostnameComponents[count($hostnameComponents)-2] . '.' . $hostnameComponents[count($hostnameComponents)-1];
 		} else {
@@ -45,14 +44,7 @@ class FaviconFetcher
 		}
 	}
 	
-	private function URLopen($url)
-	{
-		$dh = fopen("$url",'r');
-		$result = fread($dh,8192);                                                                                                                            
-		return $result;
-	} 
-	
-	private function cURLopen(string $url)
+	private function cURLopen(string $url): bool|string
 	{
 		$ch = curl_init();
 		curl_setopt_array($ch, [
@@ -70,5 +62,3 @@ class FaviconFetcher
 	}
 }
 
-
-?>
